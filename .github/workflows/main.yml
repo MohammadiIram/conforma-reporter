@@ -1,0 +1,47 @@
+name: Make Snapshots
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - "rhoai-*"
+
+jobs:
+  make-snapshots:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Repository
+        uses: actions/checkout@v4
+        with:
+          path: source
+
+      - name: Checkout Tools Repository
+        uses: actions/checkout@v4
+        with:
+          repository: your-org/tools-repository
+          path: tools
+
+      - name: Set Up Environment Variables
+        run: |
+          echo "TOOLS_DIR=${{ github.workspace }}/tools" >> $GITHUB_ENV
+          echo "SOURCE_DIR=${{ github.workspace }}/source" >> $GITHUB_ENV
+
+      - name: Retrieve Secrets
+        env:
+          QUAY_API_TOKEN: ${{ secrets.SNAPSHOT_TASK_SECRET }}
+          K8S_SA_TOKEN: ${{ secrets.SNAPSHOT_TASK_SECRET }}
+          SLACK_TOKEN: ${{ secrets.SLACK_BOT_SECRET }}
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+        run: |
+          echo "::add-mask::$QUAY_API_TOKEN"
+          echo "::add-mask::$K8S_SA_TOKEN"
+          echo "::add-mask::$SLACK_TOKEN"
+
+      - name: Generate Snapshot
+        run: |
+          set -eo pipefail
+          cd $TOOLS_DIR/tools/snapshot-generator
+          export SNAPSHOT_TARGET=$(cat $SOURCE_DIR/params | awk '{print $1}')
+          echo "snapshot target: $SNAPSHOT_TARGET"
+          bash ./conforma-reporter.sh
