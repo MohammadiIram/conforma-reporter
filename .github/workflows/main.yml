@@ -13,13 +13,11 @@ jobs:
     steps:
       - name: Checkout Source Repository
         uses: actions/checkout@v4
-        with:
-          path: source
 
       - name: Checkout Tools Repository
         uses: actions/checkout@v4
         with:
-          repository: your-org/tools-repository
+          repository: red-hat-data-services/rhods-devops-infra
           path: tools
 
       - name: Set Up Environment Variables
