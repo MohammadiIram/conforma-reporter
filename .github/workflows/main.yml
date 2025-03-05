@@ -39,7 +39,9 @@ jobs:
       - name: Generate Snapshot
         run: |
           set -eo pipefail
-          cd $TOOLS_DIR/tools/snapshot-generator
-          export SNAPSHOT_TARGET=$(cat $SOURCE_DIR/params | awk '{print $1}')
-          echo "snapshot target: $SNAPSHOT_TARGET"
+          cd $TOOLS_DIR/snapshot-generator
+          ls -l
+          export SNAPSHOT_TARGET="${{ github.event.client_payload.snapshot_target }}"
+          echo "Snapshot target: $SNAPSHOT_TARGET"
+          source ./ubuntu-install.sh
           bash ./conforma-reporter.sh
