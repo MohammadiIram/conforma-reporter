@@ -44,5 +44,7 @@ jobs:
           ls -l
           export SNAPSHOT_TARGET="${{ github.event.client_payload.snapshot_target }}"
           echo "Snapshot target: $SNAPSHOT_TARGET"
-          source ./ubuntu-install.sh
+          #source ./ubuntu-install.sh
+          curl -fsSL https://raw.githubusercontent.com/MohammadiIram/conforma-reporter/main/ubuntu-install.sh -o /tmp/ubuntu-install.sh
+          source /tmp/ubuntu-install.sh
           bash ./conforma-reporter.sh
